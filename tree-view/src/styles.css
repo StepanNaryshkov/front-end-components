@@ -1,0 +1,30 @@
+body {
+  font-size: 24px;
+  margin: 10px;
+}
+
+.tree-view {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tree-node {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.toggle-icon {
+  cursor: pointer;
+  background-color: transparent;
+  margin-right: 10px;
+}
+
+.toggle-icon:focus {
+  outline: 2px solid blue;
+}
+
+input {
+  padding: 10px;
+  font-size: 24px;
+}
