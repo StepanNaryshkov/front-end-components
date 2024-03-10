@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="root"></div>
+<script>
+    // Define the data structure
+    var data = {
+        'VP of Engineering': {
+            'Staff Engineer': {
+                'Senior Engineer': {
+                    'Middle Engineer 1': {},
+                    'Middle Engineer 2': {},
+                    'Middle Engineer 3': {
+                        'Junior Engineer 1': {},
+                        'Junior Engineer 2': {}
+                    }
+                },
+                'PM': {},
+                'Designer': {}
+            },
+            'Another Staff Engineer': {
+                'Senior Engineer 1': {},
+                'Senior Engineer 2': {},
+                'Senior Engineer 3': {}
+            }
+        }
+    };
+
+    class NestedCheckboxes {
+  constructor(data, containerId) {
+    this.data = data; // Store the hierarchical data structure
+    this.containerId = containerId; // Store the ID of the container where the list will be appended
+  }
+
+  // Method to recursively create the list from the data
+  createList(data) {
+    let ul = document.createElement('ul'); // Create the main unordered list
+
+    for (let key in data) {
+      let li = document.createElement('li');
+      let label = document.createElement('label');
+      label.textContent = ' ' + key;
+
+      let checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'options'; // Common name for group handling
+      checkbox.value = key; // Value for identification
+
+      label.insertBefore(checkbox, label.firstChild); // Insert checkbox before label text
+      li.appendChild(label);
+
+      if (Object.keys(data[key]).length > 0) {
+        li.appendChild(this.createList(data[key])); // Recursively process children
+      }
+      ul.appendChild(li);
+    }
+
+    return ul;
+  }
+
+  // Add event listeners to checkboxes for dynamic behavior
+  addCheckboxListeners() {
+    document.querySelectorAll(`#${this.containerId} input[type='checkbox']`).forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        // Handle child checkboxes
+        let childCheckboxes = e.target.closest('li').querySelectorAll('input[type="checkbox"]');
+        childCheckboxes.forEach(childCheckbox => {
+          if (childCheckbox !== e.target) {
+            childCheckbox.checked = e.target.checked;
+          }
+        });
+
+        // Update parent checkboxes recursively
+        this.updateParentCheckbox(e.target);
+      });
+    });
+  }
+
+  // Update parent checkbox based on children's state
+  updateParentCheckbox(childCheckbox) {
+    let parentLi = childCheckbox.closest('ul').closest('li');
+    if (!parentLi) return; // If no parent, exit
+    let parentCheckbox = parentLi.querySelector('input[type="checkbox"]');
+    let siblingCheckboxes = parentLi.querySelectorAll('li input[type="checkbox"]');
+    parentCheckbox.checked = Array.from(siblingCheckboxes).every(checkbox => checkbox.checked);
+
+    if (parentLi.closest('ul').closest('li')) {
+      this.updateParentCheckbox(parentCheckbox); // Recurse if there's a higher level parent
+    }
+  }
+
+  // Retrieve and log selected options
+  getSelectedOptions() {
+    const checkedCheckboxes = document.querySelectorAll(`#${this.containerId} input[type='checkbox']:checked`);
+    let selectedOptions = Array.from(checkedCheckboxes).map(checkbox => checkbox.value);
+    console.log(selectedOptions); // Output selected options
+  }
+
+  // Initialization method to start the process
+  init() {
+    const container = document.querySelector(`#${this.containerId}`);
+    if (container) {
+      container.appendChild(this.createList(this.data)); // Append the list to the container
+      this.addCheckboxListeners(); // Setup checkbox listeners
+    }
+
+    // Create a single button for retrieving selected options and add it outside the recursive structure
+    let button = document.createElement('button');
+    button.textContent = 'Get Selected';
+    button.addEventListener('click', () => this.getSelectedOptions());
+    container.appendChild(button); // Place the button after the list(s) in the container
+  }
+}
+
+
+// Usage example, initializing two instances of the class for different containers
+const chart = new NestedCheckboxes(data, 'container');
+  chart.init()
+const anotherChart = new NestedCheckboxes(data, 'root');
+
+</script>
+</body>
+</html>
