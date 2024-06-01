@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Push Notifications Demo</title> <!-- Title of the web page -->
+</head>
+<body>
+  <h1>Push Notifications Demo</h1> <!-- Header for the web page -->
+  <button id="subscribe">Subscribe for Notifications</button> <!-- Button to subscribe for notifications -->
+
+  <script>
+    const publicVapidKey = ''; // Public VAPID key for push notifications
+    const serverUrl = 'http://localhost:3001'; // URL and port of the server
+
+    // Function to register the service worker and subscribe the user for push notifications
+    async function subscribeUser() {
+      const register = await navigator.serviceWorker.register('./worker.js', { // Register the service worker
+        scope: '/' // Scope of the service worker
+      });
+
+      const existingSubscription = await register.pushManager.getSubscription(); // Get any existing subscription
+
+      // Unsubscribe the existing subscription if it exists
+      if (existingSubscription) {
+        await existingSubscription.unsubscribe();
+      }
+
+      // Subscribe the user with the new VAPID key
+      const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true, // Ensures that the subscription will only be used for push messages that are visible to the user
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey) // Convert the public VAPID key to a Uint8Array
+      });
+
+      // Send the subscription to the server
+      await fetch(`${serverUrl}/subscribe`, {
+        method: 'POST', // HTTP method
+        body: JSON.stringify(subscription), // Subscription object as JSON
+        headers: {
+          'Content-Type': 'application/json' // Content type of the request
+        }
+      });
+
+      alert('Subscribed!'); // Notify the user that they have been subscribed
+    }
+
+    document.getElementById('subscribe').addEventListener('click', () => { // Add click event listener to the subscribe button
+      subscribeUser().catch(err => console.error(err)); // Call subscribeUser and log any errors
+    });
+
+    // Function to convert a base64 string to a Uint8Array
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4); // Add padding if necessary
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/'); // Replace URL-safe characters with base64 characters
+      const rawData = window.atob(base64); // Decode the base64 string
+      return new Uint8Array([...rawData].map(char => char.charCodeAt(0))); // Convert the string to a Uint8Array
+    }
+  </script>
+</body>
+</html>
