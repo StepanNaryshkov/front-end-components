@@ -1,0 +1,19 @@
+- [ ] Create HTML layout for the game | Part 1
+- [ ] Style the game using CSS | Part 2
+- [ ] Implement game logic in JavaScript
+    - [ ] Initialize a class according to Interfaces | Part 3
+    - [ ] Create object available directions for movement | Part 4
+    - [ ] Create object with all buttons | Part 5
+    - [ ] Create snake object | Part 6
+    - [ ] Draw snake object | Part 7
+    - [ ] Implement one direction snake movement | Part 8
+    - [ ] Attach events to keyboard/buttons | 9
+    - [ ] Implement all directions snake movement | 10
+    - [ ] Grid Wrapping | Part 11
+    - [ ] Added movement for snake | Part 12
+    - [ ] Generate food for the snake | Part 13
+    - [ ] Handle correct size of the snake | Part 14
+    - [ ] Handle snake collisions | Part 15
+    - [ ] Implement scoring system | Part 16
+    - [ ] Implement pause | Part 17
+    - [ ] Implement reset | Part 18
